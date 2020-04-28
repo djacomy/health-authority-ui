@@ -14,6 +14,13 @@ SECRET_KEY = JWT_SECRET_KEY
 BASE_SERVER_PATH = os.environ.get("BASE_SERVER_PATH", 'http://127.0.0.1:5000/')
 FRONT_URL = os.environ.get("FRONT_URL", 'http://127.0.0.1:8080/')
 
+AUTHMACHINE_URL = os.environ['AUTHMACHINE_URL']
+AUTHMACHINE_CLIENT_ID = os.environ['AUTHMACHINE_CLIENT_ID']
+AUTHMACHINE_CLIENT_SECRET = os.environ['AUTHMACHINE_CLIENT_SECRET']
+AUTHMACHINE_API_TOKEN = os.environ.get('AUTHMACHINE_API_TOKEN')
+AUTHMACHINE_SCOPE = 'openid email profile'
+
+
 FIXTURES_LIST = os.environ.get("FIXTURES_LIST", 'users.json,resources.json')
 
 POSTGRES = {

@@ -39,15 +39,30 @@ http://localhost:8080
 
 ### Mock backend
 
-The mock backend is only here to allow local development. It's developped in
-python using [Flask](https://flask.palletsprojects.com/).
+Install keycloak component as Authentication system with protocol open connect:
 
-To start the server you can use the `Makefile`:
+``` 
+docker run -p 7777:8080 --name test-keycloak \
+  -e KEYCLOAK_USER=user \
+  -e KEYCLOAK_PASSWORD=password \
+  -e DB_VENDOR=H2 \
+  -d jboss/keycloak
+```
 
-```sh
-cd mock-backend
-make install
-make serve
+Configure a client, and some user, then fill the variable environment:
+
+```.env
+    AUTHMACHINE_URL=http://192.168.64.3:7777/auth/realms/master
+    AUTHMACHINE_CLIENT_ID=myclient
+    AUTHMACHINE_CLIENT_SECRET=secret
+    AUTHMACHINE_API_TOKEN=
+```
+
+Configure the variable environement to make dialog possible between front and back:
+
+```.env
+    BACKEND_URL=http://192.168.64.3:8000
+    FRONT_URL=http://192.168.64.3:8080
 ```
 
 ## License

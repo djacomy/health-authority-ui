@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<body>
+<h1>Example OIDC Relying Party</h1>
+{% if user_info %}
+    Logged in as:
+    <pre>{{ user_info }}</pre>
+    <a href="{{ url_for('.logout') }}">Log out</a>
+{% else %}
+    <a href="{{ url_for('.login') }}">Log In</a>
+{% endif %}
+</body>
+</html>

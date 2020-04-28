@@ -1,12 +1,26 @@
+import os
 from datetime import datetime, timedelta
 from random import randint
 from time import sleep
 from uuid import uuid4
-from flask import Blueprint, jsonify, current_app, json, make_response, session, redirect, request
+from flask import (Blueprint, jsonify, render_template, current_app,
+                   json, make_response, session, redirect, request, url_for)
 
+from healthautority.resource.auth import AuthMachineClient
 import config
 
-common_blueprint = Blueprint('common', __name__)
+common_blueprint = Blueprint('common', __name__,
+                             template_folder='templates',
+                             root_path=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+@common_blueprint.after_request
+def after_request(response):
+    header = response.headers
+    header["Access-Control-Allow-Origin"] = config.FRONT_URL
+    header["Access-Control-Allow-Credentials"] = "true"
+    header["Access-Control-Allow-Headers"] = "content-type"
+    return response
 
 
 @common_blueprint.route('/routes')
@@ -19,45 +33,36 @@ def list_routes():
     return jsonify(routes=output)
 
 
-@common_blueprint.after_request
-def after_request(response):
-    # Fake network delay.
-    sleep(0.5)
-    # Add CORS.
-    header = response.headers
-    header["Access-Control-Allow-Origin"] = config.FRONT_URL
-    header["Access-Control-Allow-Credentials"] = "true"
-    header["Access-Control-Allow-Headers"] = "content-type"
-    return response
-
-
 @common_blueprint.route("/")
-def home():
-    return "Hello world"
+def index():
+    return render_template('index.jinja', user_info=session.get('user_info'))
 
 
 @common_blueprint.route("/user-info/")
 def user_info():
-    if "username" in session:
-        return json.jsonify({"user": "Dr. Nemo"})
+    if "user_info" in session:
+        return json.jsonify(session['user_info'])
     return make_response("", 401)
 
 
 @common_blueprint.route("/login/", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        session["username"] = "Dr. Nemo"
-        return redirect(config.FRONT_URL)
-    return """
-        <form method="post">
-            <input type="submit" value="login">
-        </form>
-    """
+    client = AuthMachineClient()
+    return redirect(client.get_authorization_url())
+
+
+@common_blueprint.route('/oidc-callback')
+def auth_callback():
+    client = AuthMachineClient()
+    aresp = client.get_authorization_response()
+    session['user_info'] = client.get_userinfo(aresp)
+    return redirect(config.FRONT_URL)
 
 
 @common_blueprint.route("/logout/")
 def logout():
-    session.pop("username", None)
+    if 'user_info' in session:
+        del session['user_info']
     return redirect(config.FRONT_URL)
 
 
