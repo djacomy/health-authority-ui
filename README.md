@@ -24,21 +24,6 @@ library for generating QR codes that has been copied to this repository:
 
 The URLs to the API endpoints are listed at the top of the `index.js` file.
 
-## Development
-
-### Front-end
-
-You can use a simple http server like
-[live-server](https://www.npmjs.com/package/live-server) to have live
-reloading, or `python3 -m http.server`.
-
-Make sure to access the front-end with the following URL, or change the
-`FRONT_URL` accordingly in `mock-backend/server.py`:
-
-http://localhost:8080
-
-### Mock backend
-
 Install keycloak component as Authentication system with protocol open connect:
 
 ``` 
@@ -49,7 +34,7 @@ docker run -p 7777:8080 --name test-keycloak \
   -d jboss/keycloak
 ```
 
-Configure a client, and some user, then fill the variable environment:
+Configure a client, and some usesr, then fill the variable environment:
 
 ```.env
     AUTHMACHINE_URL=http://192.168.64.3:7777/auth/realms/master
@@ -58,12 +43,32 @@ Configure a client, and some user, then fill the variable environment:
     AUTHMACHINE_API_TOKEN=
 ```
 
-Configure the variable environement to make dialog possible between front and back:
+Fill the other env variales:
+- BACKEND_URL is used by the frontend to defined the backend endpoint
+- FRONT_URL is used by the backend for redirection.
 
 ```.env
-    BACKEND_URL=http://192.168.64.3:8000
-    FRONT_URL=http://192.168.64.3:8080
+    BACKEND_URL=http://127.0.0.1:8000
+    FRONT_URL=http://127.0.0.1:8080
 ```
+
+## Running a production instance
+
+```
+make build
+make run
+```
+
+## Development
+
+### Front-end
+
+http://localhost:8080
+
+### Backend
+
+http://localhost:8000
+
 
 ## License
 
