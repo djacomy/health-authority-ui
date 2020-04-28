@@ -1,0 +1,7 @@
+version: '3.5'
+
+services:
+  server:
+    command: /start.sh
+    ports:
+      - ${APP_PORT_PROD}:80
