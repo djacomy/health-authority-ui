@@ -1,8 +1,12 @@
 {
-  "name": "frontend",
+  "name": "health-authority-ui",
   "version": "1.0.0",
-  "description": "",
+  "description": "Application that allows the caregiver to authenticate with his CPS card to generate a QR code and use the identification application for people affected by covid-19",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:OpenStopCovid/health-authority-ui.git"
+  },
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
