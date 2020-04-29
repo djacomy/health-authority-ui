@@ -1,5 +1,4 @@
 import json
-from typing import List
 from urllib.parse import urlencode
 
 import os
@@ -8,7 +7,6 @@ import requests
 from oic import rndstr
 from oic.oauth2 import AuthorizationResponse
 from oic.oic import Client
-from oic.oic.message import OpenIDSchema, AccessTokenResponse
 from oic.utils.authn.client import ClientSecretBasic, ClientSecretPost
 
 from flask import *
@@ -47,7 +45,7 @@ class AuthMachineClient(object):
             'scope': config.AUTHMACHINE_SCOPE,
             'claims': json.dumps({}),
             'nonce': nonce,
-            'redirect_uri': self.host + url_for('common.auth_callback'),
+            'redirect_uri': self.host + url_for('auth.auth_callback'),
             'state': 'some-state-which-will-be-returned-unmodified'
         }
         url = self.client.provider_info['authorization_endpoint'] + '?' + urlencode(args, True)
@@ -62,7 +60,7 @@ class AuthMachineClient(object):
             'code': aresp['code'],
             'client_id': self.client.client_id,
             'client_secret': self.client.client_secret,
-            'redirect_uri': self.host + url_for('common.auth_callback')
+            'redirect_uri': self.host + url_for('auth.auth_callback')
         }
 
         return self.client.do_access_token_request(
@@ -104,11 +102,3 @@ class AuthMachineClient(object):
         response = requests.request(method=method, url=absolute_url, headers=headers, **kwargs)
 
         return response
-
-    def get_permissions(self, user_id: str) -> List[str]:
-        response = self.do_api_request('get', 'api/scim/v1/Users/{}/permissions'.format(user_id),
-                                       query_params={'object': ['obj1', 'obj2']})
-        if response.status_code == 200:
-            data = response.json()
-            return data
-        return []

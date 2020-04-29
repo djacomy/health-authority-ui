@@ -6,4 +6,4 @@
 const LOGIN_URL = "${BACKEND_URL}/login/";
 const LOGOUT_URL = "${BACKEND_URL}/logout/";
 const USERINFO_URL = "${BACKEND_URL}/user-info/";
-const CREATECODE_URL = "${BACKEND_URL}/create-code/";
+const CREATECODE_URL = "${MICROSERVICE_URL}/create-code/";

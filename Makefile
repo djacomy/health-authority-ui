@@ -10,15 +10,6 @@ test: build test_db
 prod:
 	docker-compose ${compose.prod} up -d
 
-initdb:
-	docker-compose run --rm server python manage.py db init
-
-migrate:
-	docker-compose run --rm server python manage.py db migrate
-
-db_upgrade:
-	docker-compose run --rm server python manage.py db upgrade
-
 test_db:
 	docker-compose ${compose.test} up -d db
 	docker-compose ${compose.test} exec -T db bash -c \
@@ -27,10 +18,7 @@ test_db:
 clean:
 	docker-compose down
 
-mrproper: clean
-	docker volume rm -f hub_testdbdata hub_dbdata
-
-distclean: mrproper
+distclean: clean
 	\rm .env
 
 compose.main = -f docker-compose.yml

@@ -1,20 +1,19 @@
 import os
 from datetime import datetime, timedelta
 from random import randint
-from time import sleep
 from uuid import uuid4
 from flask import (Blueprint, jsonify, render_template, current_app,
-                   json, make_response, session, redirect, request, url_for)
+                   json, make_response, session, redirect, request)
 
-from healthautority.resource.auth import AuthMachineClient
+from healthautority.auth import AuthMachineClient
 import config
 
-common_blueprint = Blueprint('common', __name__,
-                             template_folder='templates',
-                             root_path=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+blueprint = Blueprint('auth', __name__,
+                      template_folder='templates',
+                      root_path=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-@common_blueprint.after_request
+@blueprint.after_request
 def after_request(response):
     header = response.headers
     header["Access-Control-Allow-Origin"] = config.FRONT_URL
@@ -23,7 +22,7 @@ def after_request(response):
     return response
 
 
-@common_blueprint.route('/routes')
+@blueprint.route('/routes')
 def list_routes():
     output = []
     for rule in current_app.url_map.iter_rules():
@@ -33,25 +32,25 @@ def list_routes():
     return jsonify(routes=output)
 
 
-@common_blueprint.route("/")
+@blueprint.route("/")
 def index():
     return render_template('index.jinja', user_info=session.get('user_info'))
 
 
-@common_blueprint.route("/user-info/")
+@blueprint.route("/user-info/")
 def user_info():
     if "user_info" in session:
         return json.jsonify(session['user_info'])
     return make_response("", 401)
 
 
-@common_blueprint.route("/login/", methods=["GET", "POST"])
+@blueprint.route("/login/", methods=["GET", "POST"])
 def login():
     client = AuthMachineClient()
     return redirect(client.get_authorization_url())
 
 
-@common_blueprint.route('/oidc-callback')
+@blueprint.route('/oidc-callback')
 def auth_callback():
     client = AuthMachineClient()
     aresp = client.get_authorization_response()
@@ -59,14 +58,14 @@ def auth_callback():
     return redirect(config.FRONT_URL)
 
 
-@common_blueprint.route("/logout/")
+@blueprint.route("/logout/")
 def logout():
     if 'user_info' in session:
         del session['user_info']
     return redirect(config.FRONT_URL)
 
 
-@common_blueprint.route("/create-code/", methods=["POST"])
+@blueprint.route("/create-code/", methods=["POST"])
 def create_code():
     code_type = request.json["type"]
     now = datetime.now()
